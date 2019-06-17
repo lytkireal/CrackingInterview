@@ -1,3 +1,5 @@
 import UIKit
 
-var str = "Hello, playground"
+
+print(UIScrollView.DecelerationRate.fast.rawValue)
+print(UIScrollView.DecelerationRate.normal.rawValue)
