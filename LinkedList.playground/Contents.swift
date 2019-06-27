@@ -67,31 +67,9 @@ public class LinkedList<T> {
         }
         return count
     }
-    
-    public var startIndex: Index {
-        get {
-            return LinkedListIndex<T>(node: head, tag: 0)
-        }
-    }
-    
-    public var endIndex: Index {
-        get {
-            if let head = head {
-                return LinkedListIndex<T>(node: head, tag: count)
-            } else {
-                return LinkedListIndex<T>(node: nil, tag: startIndex.tag)
-            }
-        }
-    }
 }
 
 extension LinkedList {
-    
-    public subscript(position: Index) -> T {
-        get {
-            return position.node!.value
-        }
-    }
     
     public func append(value: T) {
         let newNode = Node(value: value)
@@ -184,23 +162,19 @@ extension LinkedList {
     public func reverse() {
         // begin
         var node = head
+        last = head
         
         // move to the next node
         while let currentNode = node {
             
             // get pointer of the next node for moving through linked list
             node = currentNode.next
-            
+
             // swap addresses of nodes next - previous for current node
             swap(&currentNode.next, &currentNode.previous)
             
             // move head pointer to the next node
             head = currentNode
-            
-
-            if node == nil {
-                last = currentNode
-            }
         }
     }
     
@@ -230,10 +204,6 @@ extension LinkedList {
         
         return result
     }
-    
-    public func index(after idx: Index) -> Index {
-    return LinkedListIndex<T>(node: idx.node?.next, tag: idx.tag + 1)
-    }
 }
 
 extension LinkedList: CustomStringConvertible {
@@ -246,6 +216,47 @@ extension LinkedList: CustomStringConvertible {
             if node != nil { s += ", " }
         }
         return s + "]"
+    }
+}
+
+// MARK: - Collection
+
+extension LinkedList: Collection {
+    
+    public typealias Index = LinkedListIndex<T>
+    
+    /// The position of the first element in nonempty collection.
+    ///
+    /// If the collection is empty, `startIndex` is equal to `endIndex`.
+    /// - Complexity: O(1)
+    public var startIndex: Index {
+        get {
+            return LinkedListIndex<T>(node: head, tag: 0)
+        }
+    }
+    
+    /// The collection's "past the end" position --- that is, the position one
+    /// greater than the last valid subscript argument.
+    /// - Complexity: O(n), where n is the number of elements in the list. This can be improved by keeping a reference
+    /// to the last node in the collection.
+    public var endIndex: Index {
+        get {
+            if let l = last {
+                return LinkedListIndex<T>(node: l, tag: count)
+            } else {
+                return LinkedListIndex<T>(node: nil, tag: startIndex.tag)
+            }
+        }
+    }
+    
+    public subscript(position: Index) -> T {
+        get {
+            return position.node!.value
+        }
+    }
+    
+    public func index(after idx: Index) -> Index {
+        return LinkedListIndex<T>(node: idx.node?.next, tag: idx.tag + 1)
     }
 }
 
@@ -317,10 +328,16 @@ let filtered = newList.filter { s in
 
 print(filtered)
 
-
+print("before reverse")
 print(newList)
-newList.reverse()
+//newList.reverse()
 newList.insert("Helsinki", atIndex: 0)
 
 newList.reverse()
+print("after reverse")
 print(newList)
+
+let endIndex = newList.endIndex
+let startIndex = newList.startIndex
+print(newList[endIndex])
+print(newList[startIndex])
